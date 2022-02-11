@@ -42,43 +42,35 @@ public class TableroServiceImp implements TableroService {
 		return tareasRepository.getTareasByEstado(Estados.DONE);
 	}
 
-	@Override
-	public void moverAToDo(Integer id) throws TareasException {
-		Tarea t = tareasRepository.getTareaById(id);
-
-		if(t == null) {
-			throw new TareasException("La tarea a modificar no existe");
-		}
-		if( t.getEstado() != Estados.TODO ) {
-			t.setEstado(Estados.TODO);
-			tareasRepository.update(t);
-		}
-	}
+	
 
 	@Override
 	public void moverAInProgress(Integer id) throws TareasException {
-		Tarea t = tareasRepository.getTareaById(id);
-
-		if(t == null) {
-			throw new TareasException("La tarea a modificar no existe");
-		}
-		if( t.getEstado() != Estados.INPROGRESS  ) {
-			t.setEstado(Estados.INPROGRESS);
-			tareasRepository.update(t);
-		}
+		cambiarEstado(id, Estados.INPROGRESS);
 
 	}
 
 	@Override
 	public void moverADone(Integer id) throws TareasException {
-		Tarea t = tareasRepository.getTareaById(id);
+		cambiarEstado(id, Estados.DONE);
 
+	}
+	
+	@Override
+	public void moverAToDo(Integer id) throws TareasException {
+		cambiarEstado(id, Estados.TODO);
+
+	}
+	
+	private void cambiarEstado(Integer id, Estados estado ) throws TareasException {
+		Tarea t = tareasRepository.getTareaById(id);
 		if(t == null) {
-			throw new TareasException("La tarea a modificar no existe");
+		 //throw new TareasException("La tarea a modificar no existe");
+		throw new TareasException("tareas.cambioEstado.error.noExisteTarea", id.toString());
 		}
-		if( t.getEstado() != Estados.DONE ) {
-			t.setEstado(Estados.DONE);
-			tareasRepository.update(t);
+		if( t.getEstado() != estado ) {
+		t.setEstado(estado);
+		tareasRepository.update(t);
 		}
 	}
 

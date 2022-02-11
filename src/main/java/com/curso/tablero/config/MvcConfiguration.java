@@ -3,6 +3,7 @@ package com.curso.tablero.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
@@ -33,4 +34,13 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
 	public MultipartResolver multipartResolver(){
 		return new CommonsMultipartResolver();
 	}
+	
+	@Bean
+    public ResourceBundleMessageSource messageSource() {
+		ResourceBundleMessageSource source = new ResourceBundleMessageSource();
+        source.setBasenames("/WEB-INF/mensajes/textos");
+        source.setUseCodeAsDefaultMessage(true);
+        return source;
+
+    }
 }

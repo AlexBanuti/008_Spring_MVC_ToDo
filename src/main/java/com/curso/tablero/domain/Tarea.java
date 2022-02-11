@@ -3,13 +3,22 @@ package com.curso.tablero.domain;
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class Tarea implements Serializable{
 
 	private static final long serialVersionUID = 2L;
 	
+	
+ 
 	private Integer id; //pk
-	private String titulo;
-	private String descripcion;
+    @NotNull
+    @Size(max=25)
+	private String titulo; 
+    @NotNull
+    @Size(max=50)
+	private String descripcion; 
 	private Estados estado;
 	
 	public Tarea() {

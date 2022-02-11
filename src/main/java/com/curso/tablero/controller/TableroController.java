@@ -1,12 +1,18 @@
 package com.curso.tablero.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
+
 
 import com.curso.tablero.domain.Tarea;
 import com.curso.tablero.exceptions.TareasException;
@@ -48,32 +54,44 @@ public class TableroController {
 				tableroService.moverADone(id);
 				break;
 			default:
-				throw new TareasException("No ha indicado un estado valido");
+				throw new TareasException("tareas.cambioEstado.error.noExisteEstado", nuevoEstado);
 			}
 			
 			return "redirect:/tablero";
 		}
 	
-		// post  /tablero/nueva-tarea
-	@GetMapping("/tablero/{nueva-tarea}")
-	public String getCrearNuevaTareaFormulario(Model model) {
-		Tarea tarea = new Tarea();
-		model.addAttribute("nuevaTarea", tarea);
-		return "crear-tarea";
-	}
-	
-	
-	@PostMapping("/tablero/crear-tarea")
-	public String crearNuevaTareaFormulario(
-			@ModelAttribute("nuevaTarea") Tarea nueva,
-			Model model ) throws TareasException {
-				Tarea tarea = new Tarea();
-				model.addAttribute("nuevaTarea", tarea);
-				tableroService.crearTarea(tarea);
-				return "redirect:/tablero";
-			}
+	// get /tablero/nueva-tarea
+    @GetMapping("/tablero/crear-tarea")
+    public String getCrearNuevaTareaFormulario(Model model) {
+        Tarea tarea = new Tarea();
+        model.addAttribute("nuevaTarea", tarea);
+        return "crear-tarea";
+    }
+    // post /tablero/nueva-tarea
+    @PostMapping("/tablero/crear-tarea")
+    public String crearNuevaTarea(@ModelAttribute("nuevaTarea") @Valid Tarea nueva, BindingResult bindingResult) throws TareasException {
+           
+        if (bindingResult.hasErrors()) {
+            return "crear-tarea";
+        }
+        tableroService.crearTarea(nueva);
+        return "redirect:/tablero";
+    }
 	
 		// get /tablero/tarea/{id}/{nuevoEstado}
+
+	 @ExceptionHandler(TareasException.class)
+
+	    public ModelAndView handleException( TareasException exception) {
+
+	         ModelAndView mav = new ModelAndView();
+
+	         mav.addObject("claveMensage",exception.getKeyMensaje());
+	         mav.addObject("argsMensage", exception.getArgs());
+	         exception.printStackTrace();
+	         mav.setViewName("tareas-exception");
+	         return mav;
+	    }
 
 }
 	
